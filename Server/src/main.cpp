@@ -7,17 +7,12 @@
 #include <sstream>
 #include <fstream>
 #include <vector>
+#include <map>
 
 void changeColor(int desiredColor) { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), desiredColor);}
 void ltrim(std::string& s) { s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) { return !std::isspace(ch); })); }
 void rtrim(std::string& s) { s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) { return !std::isspace(ch); }).base(), s.end());}
 void trim(std::string& s) { ltrim(s); rtrim(s); }
-
-struct KeyValuePair
-{
-	std::string key;
-	std::string value;
-};
 
 struct HTTPRequest
 {
@@ -25,7 +20,7 @@ struct HTTPRequest
 	std::string path;
 	std::string version;
 
-	std::vector<KeyValuePair> headerFields;
+	std::map<std::string, std::string> headerFields;
 };
 
 void ParseRequest(const char* inRequest, HTTPRequest& outRequest)
@@ -46,13 +41,13 @@ void ParseRequest(const char* inRequest, HTTPRequest& outRequest)
 	for (std::string line; std::getline(request, line);)
 	{
 		std::stringstream field(line);
-		KeyValuePair newPair;
 
-		std::getline(field, newPair.key, ':');
-		std::getline(field, newPair.value);
-		trim(newPair.key); trim(newPair.value);
+		std::string key, value;
+		std::getline(field, key, ':');
+		std::getline(field, value);
+		trim(key); trim(value);
 
-		outRequest.headerFields.push_back(newPair);
+		outRequest.headerFields.insert({ key, value });
 	}
 }
 
@@ -73,7 +68,7 @@ class WebServer : public TcpListner
 		HTTPRequest httpRequestStruct;
 		ParseRequest(message, httpRequestStruct);
 
-		//std::fstream imageFile("C:\\Users\\TarunChand\\Desktop\\bunny.mp4", std::ios::binary | std::ios::in);
+		//std::fstream imageFile("E:\\Learning\\Courses\\Basketball\\01 Introduction  Write Your Own Story.mp4", std::ios::binary | std::ios::in);
 		//std::stringstream responseContentStream;
 		//responseContentStream << imageFile.rdbuf();
 		//std::string response = responseContentStream.str();
@@ -96,6 +91,11 @@ class WebServer : public TcpListner
 		responseStream << "\r\n";
 		responseStream << response;
 		SendMessageToClient(client, responseStream.str().c_str(), responseStream.str().size() + 1);
+
+		for (auto pair : httpRequestStruct.headerFields)
+		{
+			std::cout << pair.first << " : " << pair.second << std::endl;
+		}
 	}
 };
 
