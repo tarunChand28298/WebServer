@@ -156,11 +156,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\TCP_Listner\TCPListner.h" />
-<<<<<<< HEAD
     <ClInclude Include="src\Thread\thread.h" />
-=======
-    <ClInclude Include="src\thread.h" />
->>>>>>> 59762ea9ac53094a5bf94d9876cd67943e87b007
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
