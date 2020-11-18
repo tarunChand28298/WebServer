@@ -52,9 +52,7 @@ namespace waves {
 
         }
 
-        ~thread() noexcept {
-            join();
-        }
+        ~thread() noexcept { }
 
         thread(thread&& _Other) noexcept {
             std::swap(id, _Other.id);
@@ -73,7 +71,7 @@ namespace waves {
         thread& operator=(const thread&) = delete;
 
         bool joinable() const noexcept {
-            return id != 0;
+            return handle != 0;
         }
 
         void join() {
@@ -100,7 +98,6 @@ namespace waves {
             }
 
             CloseHandle((HANDLE)handle);
-            id = 0;
         }
 
         uint32_t get_id() const noexcept {

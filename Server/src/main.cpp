@@ -1,7 +1,9 @@
 #include "TCP_Listner/TCPListner.h"
+#include "Thread/thread.h"
 
 #include <Windows.h>
 #include <iostream>
+#include <thread>
 
 #include <string>
 #include <sstream>
@@ -172,7 +174,7 @@ class WebServer : public TcpListner
 			outRequest.headerFields.insert({ key, value });
 		}
 	}
-	void DeliverFile(const int client, const std::string fileName, HTTPResponseHeader& header)
+	void DeliverFile(const int client, std::string fileName, HTTPResponseHeader header)
 	{
 		std::stringstream fullResponse;
 
@@ -198,12 +200,10 @@ class WebServer : public TcpListner
 	{
 
 	}
-
 	void OnClientDisconnected(int client) override
 	{
 		
 	}
-
 	void OnMessageReceived(int client, const char* message, int messageLength) override
 	{
 		HTTPRequestHeader httpRequest;
@@ -220,34 +220,21 @@ class WebServer : public TcpListner
 		}
 		std::cout << std::endl;
 
-		HTTPResponseHeader header;
-		header.version = "HTTP/1.1";
-		header.statusCode = *statusCodes.find("200");
-		header.headerFields["Cache-Control"] = "no-cache, private";
-		header.headerFields["Accept-Ranges"] = "bytes";
-		header.headerFields["Content-Type"] = GetContentType(GetResourceType(httpRequest.path));
-
-		DeliverFile(client, GetContentFilename(GetResourceType(httpRequest.path), httpRequest.path), header);
+		HTTPResponseHeader responseHeader;
+		responseHeader.version = "HTTP/1.1";
+		responseHeader.statusCode = *statusCodes.find("200");
+		responseHeader.headerFields["Cache-Control"] = "no-cache, private";
+		responseHeader.headerFields["Accept-Ranges"] = "bytes";
+		responseHeader.headerFields["Content-Type"] = GetContentType(GetResourceType(httpRequest.path));
+		
+		std::string filePathName = GetContentFilename(GetResourceType(httpRequest.path), httpRequest.path);
+		waves::thread deferedDeliver(&WebServer::DeliverFile, this, client, (filePathName), (responseHeader));
+		deferedDeliver.detach();
 	}
 };
 
-#include "Thread/thread.h"
-
-void greet(const char* msg) {
-	std::cout << msg << std::endl;
-}
-
-
 int main()
 {
-
-	waves::thread t1(greet, "hello");
-	{
-		waves::thread t2(greet, "bye");
-	}
-
-	t1.join();
-
 	WebServer server;
 	server.Initialize("0.0.0.0", 54000);
 
