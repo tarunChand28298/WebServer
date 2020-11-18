@@ -231,8 +231,23 @@ class WebServer : public TcpListner
 	}
 };
 
+#include "thread.h"
+
+void greet(const char* msg) {
+	std::cout << msg << std::endl;
+}
+
+
 int main()
 {
+
+	waves::thread t1(greet, "hello");
+	{
+		waves::thread t2(greet, "bye");
+	}
+
+	t1.join();
+
 	WebServer server;
 	server.Initialize("0.0.0.0", 54000);
 
