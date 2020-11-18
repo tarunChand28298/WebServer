@@ -152,6 +152,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\TCP_Listner\TCPListner.h" />
+    <ClInclude Include="thread.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
