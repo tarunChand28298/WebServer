@@ -12,6 +12,7 @@
 #include <map>
 
 #define CONTENT_BASE_DIR (std::string("C:\\Users\\TarunChand\\Desktop\\WebContent"))
+#define FILE_NOT_FOUND_PATH (std::string("C:\\Users\\TarunChand\\Desktop\\WebContent\\fileNotFound.txt"))
 
 void changeColor(int desiredColor) { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), desiredColor);}
 void ltrim(std::string& s) { s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) { return !std::isspace(ch); })); }
@@ -83,7 +84,7 @@ std::string GetContentFilename(ResourceType type, std::string file)
 		case ResourceType::Icon:
 		case ResourceType::Audio:
 		case ResourceType::Video: return CONTENT_BASE_DIR + file;
-		default: return CONTENT_BASE_DIR + "/UnsupportedMessage.txt";
+		default: return CONTENT_BASE_DIR + "/index.html";
 	}
 }
 
@@ -177,13 +178,22 @@ class WebServer : public TcpListner
 	void DeliverFile(const int client, std::string fileName, HTTPResponseHeader header)
 	{
 		std::stringstream fullResponse;
+		std::stringstream responseBodyStream;
+		std::stringstream responseHeaderStream;
 
 		std::fstream fileToSend(fileName, std::ios::binary | std::ios::in);
-		std::stringstream responseBodyStream;
-		responseBodyStream << fileToSend.rdbuf();
-		header.headerFields["Content-Length"] = std::to_string(responseBodyStream.str().size());
+		if (fileToSend.good())
+		{
+			responseBodyStream << fileToSend.rdbuf();
+		}
+		else
+		{
+			std::fstream fileNotFound(FILE_NOT_FOUND_PATH, std::ios::binary | std::ios::in);
+			header.statusCode = *statusCodes.find("404");
+			responseBodyStream << fileNotFound.rdbuf();
+		}
 
-		std::stringstream responseHeaderStream;
+		header.headerFields["Content-Length"] = std::to_string(responseBodyStream.str().size());
 		responseHeaderStream << header.version << " " << header.statusCode.first << " " << header.statusCode.second << "\r\n";
 		for (auto pair : header.headerFields)
 		{
