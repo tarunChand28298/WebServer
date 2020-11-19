@@ -226,7 +226,9 @@ class WebServer : public TcpListner
 		changeColor(7);
 		for (auto pair : httpRequest.headerFields)
 		{
-			std::cout << pair.first << " : " << pair.second << std::endl;
+			changeColor(FOREGROUND_RED); std::cout << pair.first;
+			changeColor(7); std::cout << " : ";
+			std::cout << pair.second << std::endl;
 		}
 		std::cout << std::endl;
 
