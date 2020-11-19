@@ -5,9 +5,9 @@ As the title suggests, this is a web server that serves up static web pages and 
 This is a hobby project we did as a part of learning networking and socket programming in C++ and WIN32 api for windows.
 
 ## Screenshots:
-![1](./sceenshots/1.png "1")
-![2](./sceenshots/2.png "2")
-![3](./sceenshots/3.png "3")
+![1](https://github.com/tarunChand28298/WebServer/blob/master/screenshots/1.png?raw=true)
+![2](https://github.com/tarunChand28298/WebServer/blob/master/screenshots/2.png?raw=true)
+![3](https://github.com/tarunChand28298/WebServer/blob/master/screenshots/3.png?raw=true)
 
 ## Technologies used:
 * C++ (MSVC)
